@@ -129,7 +129,8 @@ class MatchingSimulation:
             
         for student in ['s2', 's3']:
             matched_school = first_round_matching[student]
-            original_pref = original_prefs[student]
+            # 将元组转换为列表
+            original_pref = list(original_prefs[student])
             matched_school_index = original_pref.index(matched_school)
             
             if self.debug:
@@ -157,30 +158,31 @@ class MatchingSimulation:
             
         return updated_prefs
     
-# 创建实例并启用调试
-sim = MatchingSimulation()
-sim.set_debug(True)  # 打开调试模式
+if __name__ == '__main__':
+    # 创建实例并启用调试
+    sim = MatchingSimulation()
+    sim.set_debug(True)  # 打开调试模式
 
-# 测试生成偏好
-all_prefs = sim.generate_all_preferences()
+    # 测试生成偏好
+    all_prefs = sim.generate_all_preferences()
 
-# 测试DA算法
-# 创建一个简单的测试用例
-student_prefs = {
-    's1': ['c1', 'c2', 'c3'],
-    's2': ['c1', 'c2', 'c3'],
-    's3': ['c1', 'c3', 'c2']
-}
+    # 测试DA算法
+    # 创建一个简单的测试用例
+    student_prefs = {
+        's1': ['c1', 'c2', 'c3'],
+        's2': ['c1', 'c2', 'c3'],
+        's3': ['c1', 'c3', 'c2']
+    }
 
-school_prefs = {
-    'c1': ['s1', 's2', 's3'],
-    'c2': ['s2', 's3', 's1'],
-    'c3': ['s3', 's1', 's2']
-}
+    school_prefs = {
+        'c1': ['s1', 's2', 's3'],
+        'c2': ['s2', 's3', 's1'],
+        'c3': ['s3', 's1', 's2']
+    }
 
-# 运行DA算法
-matching_result = sim.da_algorithm(student_prefs, school_prefs)
+    # 运行DA算法
+    matching_result = sim.da_algorithm(student_prefs, school_prefs)
 
-# 测试偏好更新
-original_prefs = student_prefs
-updated_prefs = sim.generate_updated_preferences(matching_result, original_prefs)
+    # 测试偏好更新
+    original_prefs = student_prefs
+    updated_prefs = sim.generate_updated_preferences(matching_result, original_prefs)
