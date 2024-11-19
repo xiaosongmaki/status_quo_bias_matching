@@ -1,0 +1,125 @@
+{
+  "case_id": 576,
+  "initial_setup": {
+    "student_preferences": {
+      "s1": [
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "s2": [
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "s3": [
+        "c2",
+        "c1",
+        "c3"
+      ]
+    },
+    "school_preferences": {
+      "c1": [
+        "s3",
+        "s1",
+        "s2"
+      ],
+      "c2": [
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "c3": [
+        "s1",
+        "s2",
+        "s3"
+      ]
+    }
+  },
+  "honest_scenario": {
+    "first_round": {
+      "preferences": {
+        "s1": [
+          "c1",
+          "c2",
+          "c3"
+        ],
+        "s2": [
+          "c1",
+          "c2",
+          "c3"
+        ],
+        "s3": [
+          "c2",
+          "c1",
+          "c3"
+        ]
+      },
+      "matching": {
+        "s3": "c1",
+        "s1": "c2",
+        "s2": "c3"
+      }
+    }
+  },
+  "beneficial_strategy": {
+    "false_preference": [
+      "c2",
+      "c1",
+      "c3"
+    ],
+    "first_round": {
+      "preferences": {
+        "s1": [
+          "c2",
+          "c1",
+          "c3"
+        ],
+        "s2": [
+          "c1",
+          "c2",
+          "c3"
+        ],
+        "s3": [
+          "c2",
+          "c1",
+          "c3"
+        ]
+      },
+      "matching": {
+        "s3": "c1",
+        "s1": "c2",
+        "s2": "c3"
+      }
+    },
+    "beneficial_second_round": {
+      "updated_preferences": {
+        "s1": [
+          "c1",
+          "c2",
+          "c3"
+        ],
+        "s2": [
+          "c3",
+          "c1",
+          "c2"
+        ],
+        "s3": [
+          "c2",
+          "c1",
+          "c3"
+        ]
+      },
+      "matching": {
+        "s1": "c1",
+        "s3": "c2",
+        "s2": "c3"
+      },
+      "outcome": {
+        "honest_result": "c2",
+        "strategic_result": "c1",
+        "is_beneficial": true
+      }
+    }
+  }
+}

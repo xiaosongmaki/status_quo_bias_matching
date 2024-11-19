@@ -58,27 +58,11 @@ def run_simulation():
         # 运行诚实申报的第一轮
         honest_first_matching = sim.da_algorithm(honest_prefs, school_prefs)
         
-        # 生成诚实申报情况下的第二轮偏好更新
-        honest_updated_prefs = sim.generate_updated_preferences(
-            honest_first_matching, honest_prefs)
-        
-        # 运行诚实申报的第二轮
-        honest_second_round_prefs = {
-            's1': sim.s1_true_pref,
-            's2': honest_updated_prefs['s2'][0],
-            's3': honest_updated_prefs['s3'][0]
-        }
-        honest_second_matching = sim.da_algorithm(honest_second_round_prefs, school_prefs)
-        
         # 记录诚实情况的数据
         case_data["honest_scenario"] = {
             "first_round": {
                 "preferences": honest_prefs,
                 "matching": honest_first_matching
-            },
-            "second_round": {
-                "updated_preferences": honest_second_round_prefs,
-                "matching": honest_second_matching
             }
         }
         
@@ -90,7 +74,7 @@ def run_simulation():
             strategic_scenario = {
                 "false_preference": list(s1_false_pref),
                 "first_round": {},
-                "second_round": {}
+                "second_round_scenarios": []
             }
             
             # 运行虚假申报的第一轮
@@ -112,31 +96,36 @@ def run_simulation():
             strategic_updated_prefs = sim.generate_updated_preferences(
                 strategic_first_matching, strategic_first_prefs)
             
-            # 运行虚假申报的第二轮（使用真实偏好）
-            strategic_second_round_prefs = {
-                's1': sim.s1_true_pref,
-                's2': strategic_updated_prefs['s2'][0],
-                's3': strategic_updated_prefs['s3'][0]
-            }
-            strategic_second_matching = sim.da_algorithm(
-                strategic_second_round_prefs, school_prefs)
-            
-            # 记录第二轮数据
-            strategic_scenario["second_round"] = {
-                "updated_preferences": strategic_second_round_prefs,
-                "matching": strategic_second_matching
-            }
-            
-            # 检查是否获得更好的结果
-            honest_final_school = honest_second_matching['s1']
-            strategic_final_school = strategic_second_matching['s1']
-            
-            strategic_scenario["outcome"] = {
-                "honest_result": honest_final_school,
-                "strategic_result": strategic_final_school,
-                "is_beneficial": (sim.s1_true_pref.index(strategic_final_school) < 
-                                sim.s1_true_pref.index(honest_final_school))
-            }
+            # 考虑所有可能的第二轮偏好更新组合
+            for s2_updated_pref in strategic_updated_prefs['s2']:
+                for s3_updated_pref in strategic_updated_prefs['s3']:
+                    # 运行虚假申报的第二轮（使用真实偏好）
+                    strategic_second_round_prefs = {
+                        's1': sim.s1_true_pref,
+                        's2': s2_updated_pref,
+                        's3': s3_updated_pref
+                    }
+                    strategic_second_matching = sim.da_algorithm(
+                        strategic_second_round_prefs, school_prefs)
+                    
+                    # 记录每种可能的第二轮情况
+                    second_round_scenario = {
+                        "updated_preferences": strategic_second_round_prefs,
+                        "matching": strategic_second_matching
+                    }
+                    
+                    # 检查是否获得更好的结果（与第一轮诚实结果比较）
+                    honest_school = honest_first_matching['s1']
+                    strategic_final_school = strategic_second_matching['s1']
+                    
+                    second_round_scenario["outcome"] = {
+                        "honest_result": honest_school,
+                        "strategic_result": strategic_final_school,
+                        "is_beneficial": (sim.s1_true_pref.index(strategic_final_school) < 
+                                        sim.s1_true_pref.index(honest_school))
+                    }
+                    
+                    strategic_scenario["second_round_scenarios"].append(second_round_scenario)
             
             case_data["strategic_scenarios"].append(strategic_scenario)
         
@@ -154,17 +143,54 @@ def analyze_results(simulation_data, filename: str):
     """分析模拟结果并打印摘要"""
     total_cases = len(simulation_data["cases"])
     beneficial_cases = 0
+    total_scenarios = 0
     
     for case in simulation_data["cases"]:
-        for scenario in case["strategic_scenarios"]:
-            if scenario["outcome"]["is_beneficial"]:
-                beneficial_cases += 1
+        for strategy in case["strategic_scenarios"]:
+            for second_round in strategy["second_round_scenarios"]:
+                total_scenarios += 1
+                if second_round["outcome"]["is_beneficial"]:
+                    beneficial_cases += 1
                 
     print(f"\n模拟结果摘要:")
     print(f"总案例数: {total_cases}")
+    print(f"总策略组合数: {total_scenarios}")
     print(f"发现的有利策略性操作案例数: {beneficial_cases}")
+    print(f"有利策略比例: {beneficial_cases/total_scenarios:.2%}")
     print(f"详细结果已保存到: {filename}")
+
+def save_first_beneficial_case(simulation_data: dict):
+    """
+    查找并保存第一个包含有利策略的案例
+    """
+    for case in simulation_data["cases"]:
+        for strategy in case["strategic_scenarios"]:
+            for second_round in strategy["second_round_scenarios"]:
+                if second_round["outcome"]["is_beneficial"]:
+                    # 创建一个包含完整上下文的案例数据
+                    beneficial_case = {
+                        "case_id": case["case_id"],
+                        "initial_setup": case["initial_setup"],
+                        "honest_scenario": case["honest_scenario"],
+                        "beneficial_strategy": {
+                            "false_preference": strategy["false_preference"],
+                            "first_round": strategy["first_round"],
+                            "beneficial_second_round": second_round
+                        }
+                    }
+                    
+                    # 保存到新的JSON文件
+                    filename = "first_beneficial_case.json"
+                    with open(filename, 'w', encoding='utf-8') as f:
+                        json.dump(beneficial_case, f, indent=2, ensure_ascii=False)
+                    
+                    print(f"已找到第一个有利案例并保存到: {filename}")
+                    return beneficial_case
+    
+    print("未找到有利的策略性操作案例")
+    return None
 
 if __name__ == "__main__":
     results, filename = run_simulation()
-    analyze_results(results, filename) 
+    analyze_results(results, filename)
+    save_first_beneficial_case(results) 
