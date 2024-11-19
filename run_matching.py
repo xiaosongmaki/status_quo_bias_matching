@@ -86,6 +86,10 @@ def run_simulation():
             strategic_first_matching = sim.da_algorithm(
                 strategic_first_prefs, school_prefs)
             
+            # 如果第一轮匹配结果与诚实情况相同，跳过这种策略
+            if strategic_first_matching == honest_first_matching:
+                continue
+            
             # 记录第一轮数据
             strategic_scenario["first_round"] = {
                 "preferences": strategic_first_prefs,
