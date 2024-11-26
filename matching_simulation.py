@@ -3,9 +3,9 @@ from typing import List, Dict, Tuple, Set
 
 class MatchingSimulation:
     def __init__(self):
-        self.students = ['s1', 's2', 's3']
-        self.schools = ['c1', 'c2', 'c3']
-        self.s1_true_pref = ['c1', 'c2', 'c3']
+        self.students = ['s1', 's2', 's3', 's4']
+        self.schools = ['c1', 'c2', 'c3', 'c4']
+        self.s1_true_pref = ['c1', 'c2', 'c3', 'c4']
         
         # 添加调试标志
         self.debug = False
@@ -15,23 +15,39 @@ class MatchingSimulation:
         self.debug = debug
         
     def generate_all_preferences(self) -> Dict[str, List[List[str]]]:
-        """生成所有可能的偏好排列"""
-        all_perms = list(permutations(self.schools))
+        """生成限制数量的偏好排列"""
+        # 学生的偏好（对学校的排序）
+        school_perms = list(permutations(self.schools))
+        max_school_perms = 6  # 限制学校排列数量
+        
+        # 学校的偏好（对学生的排序）
+        student_perms = list(permutations(self.students))
+        max_student_perms = 6  # 限制学生排列数量
+        
+        import random
+        # 为学生采样学校的排序
+        sampled_school_perms = random.sample(school_perms, min(max_school_perms, len(school_perms)))
+        # 为学校采样学生的排序
+        sampled_student_perms = random.sample(student_perms, min(max_student_perms, len(student_perms)))
+            
         result = {
-            's1': all_perms,  # s1的所有可能虚假申报
-            's2': all_perms,
-            's3': all_perms,
-            'c1': list(permutations(self.students)),
-            'c2': list(permutations(self.students)),
-            'c3': list(permutations(self.students))
+            # 学生的偏好
+            's1': sampled_school_perms,
+            's2': sampled_school_perms,
+            's3': sampled_school_perms,
+            's4': sampled_school_perms,
+            # 学校的偏好
+            'c1': sampled_student_perms,
+            'c2': sampled_student_perms,
+            'c3': sampled_student_perms,
+            'c4': sampled_student_perms
         }
         
         if self.debug:
-            print("生成的所有可能偏好:")
-            for agent, prefs in result.items():
-                print(f"{agent}的偏好列表: {prefs}")
-                print(f"总共{len(prefs)}种可能的排列")
-                
+            print("生成的偏好样本:")
+            print("学生对学校的偏好样本:", sampled_school_perms[0])
+            print("学校对学生的偏好样本:", sampled_student_perms[0])
+        
         return result
         
     def da_algorithm(self, student_prefs: Dict[str, List[str]], 
@@ -127,7 +143,7 @@ class MatchingSimulation:
             print(f"第一轮匹配结果: {first_round_matching}")
             print(f"原始偏好: {original_prefs}")
             
-        for student in ['s2', 's3']:
+        for student in ['s2', 's3', 's4']:
             matched_school = first_round_matching[student]
             # 将元组转换为列表
             original_pref = list(original_prefs[student])
