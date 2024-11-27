@@ -1,0 +1,105 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+\title{Analysis of Strategic Behavior in School Choice Mechanisms}
+\author{HUANG XING}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Results for 3 Students and 3 Schools Scenario}
+
+In this section, I present my analysis of strategic behavior in a 3x3 school choice mechanism implemented over two rounds. My simulation framework systematically explores the possibility of beneficial preference manipulation.
+
+\subsection{Simulation Framework}
+My code implements a comprehensive search for strategic manipulation opportunities with the following structure:
+\begin{itemize}
+    \item Student $s_1$'s true preference is fixed as: $c_1 \succ c_2 \succ c_3 $
+    \item For all other agents (3 students and 3 schools), each has 6 possible preference orderings
+    \item This creates a total of $6^5=7776$ possible preference combinations to examine
+\end{itemize}
+
+\subsection{Strategic Analysis Methodology}
+For each preference profile, I investigate whether $s_1$ can benefit from strategic manipulation through:
+\begin{enumerate}
+    \item First round: $s_1$ misreports preferences while others report truthfully
+    \item Second round: 
+        \begin{itemize}
+            \item Other students update their preferences based on first-round outcomes
+            \item $s_1$ reverts to truthful reporting
+        \end{itemize}
+    \item Comparison: I compare $s_1$'s final outcome under strategic behavior versus truthful reporting
+\end{enumerate}
+
+\subsection{Key Findings}
+My exhaustive simulation revealed:
+\begin{itemize}
+    \item Among the $6^5$ total cases examined, 144 cases demonstrated successful strategic manipulation
+    \item In these cases, $s_1$'s strategic misreporting in the first round, followed by truthful reporting in the second round, led to a strictly better outcome compared to being truthful throughout
+    \item This suggests that even in a relatively simple two-round matching mechanism, there exist significant opportunities for beneficial strategic behavior
+\end{itemize}
+
+\subsection{Detailed Case Study of Beneficial Strategic Behavior}
+Let's examine a specific case (Case ID 1044) that demonstrates how strategic manipulation can lead to better outcomes:
+
+\subsubsection{Initial Preference Setup}
+\begin{itemize}
+    \item True Student Preferences:
+    \begin{itemize}
+        \item $s_1$: $c_1 \succ c_2 \succ c_3$
+        \item $s_2$: $c_1 \succ c_2 \succ c_3$
+        \item $s_3$: $c_3 \succ c_1 \succ c_2$
+    \end{itemize}
+    \item School Preferences:
+    \begin{itemize}
+        \item $c_1$: $s_3 \succ s_2 \succ s_1$
+        \item $c_2$: $s_1 \succ s_2 \succ s_3$
+        \item $c_3$: $s_1 \succ s_2 \succ s_3$
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Truthful Reporting Scenario}
+When all students report preferences honestly:
+\begin{itemize}
+    \item First round matching: $\mu_1 = \{(s_1,c_2), (s_2,c_1), (s_3,c_3)\}$
+    \item $s_1$ receives their second choice $c_2$
+\end{itemize}
+
+\subsubsection{Strategic Manipulation}
+$s_1$ employs the following strategy:
+\begin{enumerate}
+    \item Misreports first-round preference as: $c_1 \succ c_3 \succ c_2$
+    \item First round matching results: $\mu'_1 = \{(s_1,c_3), (s_2,c_2), (s_3,c_1)\}$
+    \item Second round preference updates:
+    \begin{itemize}
+        \item $s_2$ updates to: $c_2 \succ c_1 \succ c_3$
+        \item $s_3$ maintains: $c_3 \succ c_1 \succ c_2$
+    \end{itemize}
+    \item $s_1$ reverts to truthful reporting in second round
+    \item Final matching: $\mu'_2 = \{(s_1,c_1), (s_2,c_2), (s_3,c_3)\}$
+\end{enumerate}
+Through this strategic manipulation, $s_1$ ultimately obtains their top choice $c_1$, a clear improvement over $c_2$ received under truthful reporting. 
+
+
+
+
+
+
+\section{Results for 4 Students and 4 Schools Scenario}
+% 这里可以添加:
+% - 更复杂情况下的偏好描述
+% - 扩展情况下的均衡分析
+% - 4x4情况的关键发现
+% - 相关数据可视化
+
+\section{Intuition Behind First-Round Manipulation}
+% 这里可以添加:
+% - 理论分析
+% - 具体例子说明
+% - 为什么第一轮说谎可能带来更好结果的直观解释
+% - 可能的博弈论解释
+
+\end{document} 
